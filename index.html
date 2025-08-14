@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Calculadora para convertir entre Fahrenheit y Celsius y viceversa">
+    <title>FC Temp Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        :root {
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --danger: #ef4444;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-text: #f1f5f9;
+            --dark-text-secondary: #94a3b8;
+            --border-radius: 18px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 10px 20px rgba(0, 0, 0, 0.2);
+            --glass: rgba(30, 41, 59, 0.85);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--dark-text);
+        }
+        
+        .container {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            width: 100%;
+            max-width: 480px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        
+        header {
+            background: rgba(15, 23, 42, 0.7);
+            text-align: center;
+            padding: 35px 25px 30px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+        }
+        
+        h1 {
+            font-size: 2.4rem;
+            margin-bottom: 8px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #c4b5fd, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .converter {
+            padding: 35px;
+        }
+        
+        .input-group {
+            margin-bottom: 28px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 14px;
+            font-weight: 500;
+            color: var(--dark-text);
+            font-size: 1.15rem;
+            letter-spacing: 0.5px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 18px 22px;
+            font-size: 1.15rem;
+            background: rgba(15, 23, 42, 0.45);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: 14px;
+            outline: none;
+            transition: var(--transition);
+            color: var(--dark-text);
+            box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.25);
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.25);
+        }
+        
+        input::placeholder {
+            color: rgba(148, 163, 184, 0.6);
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 35px;
+        }
+        
+        button {
+            padding: 18px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-convert {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 6px 12px rgba(139, 92, 246, 0.3);
+        }
+        
+        .btn-convert:hover {
+            background: var(--primary-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4);
+        }
+        
+        .btn-clear {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-clear:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+        
+        .result {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.5));
+            border-radius: 14px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            margin-top: 25px;
+        }
+        
+        .result h3 {
+            color: var(--dark-text-secondary);
+            margin-bottom: 15px;
+            font-size: 1.15rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        
+        .result-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        .result-unit {
+            font-size: 1.5rem;
+            color: #c4b5fd;
+            margin-left: 5px;
+            font-weight: 300;
+        }
+        
+        .formula {
+            background: rgba(15, 23, 42, 0.45);
+            border-radius: 14px;
+            padding: 22px;
+            margin-top: 30px;
+            font-size: 1rem;
+            color: var(--dark-text-secondary);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        
+        .formula h4 {
+            margin-bottom: 14px;
+            text-align: center;
+            color: var(--dark-text);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .formula p {
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: #c4b5fd;
+            font-weight: 500;
+        }
+        
+        .install-prompt {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--primary);
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+        }
+        
+        .install-prompt p {
+            margin-bottom: 18px;
+            color: var(--dark-text);
+            font-size: 1.05rem;
+        }
+        
+        .install-prompt button {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+            font-weight: 600;
+            padding: 16px;
+        }
+        
+        .install-prompt button:hover {
+            background: var(--primary-hover);
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 30px 20px 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .converter {
+                padding: 30px;
+            }
+            
+            .buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-value {
+                font-size: 2.8rem;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .container {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .input-group, .buttons, .result, .formula {
+            animation: fadeIn 0.6s ease-out;
+            animation-fill-mode: backwards;
+        }
+        
+        .input-group { animation-delay: 0.1s; }
+        .buttons { animation-delay: 0.2s; }
+        .result { animation-delay: 0.3s; }
+        .formula { animation-delay: 0.4s; }
+        
+        .result-value {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>FC Temp Converter</h1>
+        </header>
+        
+        <main class="converter">
+            <div class="input-group">
+                <label for="temperature">Temperatura:</label>
+                <input type="number" id="temperature" placeholder="Ingrese el valor" autofocus>
+            </div>
+            
+            <div class="input-group">
+                <label for="unit">Convertir de:</label>
+                <select id="fromUnit" class="unit-select">
+                    <option value="fahrenheit">Fahrenheit (°F)</option>
+                    <option value="celsius">Celsius (°C)</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label for="unit">Convertir a:</label>
+                <select id="toUnit" class="unit-select">
+                    <option value="celsius">Celsius (°C)</option>
+                    <option value="fahrenheit">Fahrenheit (°F)</option>
+                </select>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn-convert" id="convertBtn">
+                    <span>⇨</span> Convertir
+                </button>
+                <button class="btn-clear" id="clearBtn">
+                    <span>×</span> Limpiar
+                </button>
+            </div>
+            
+            <div class="result">
+                <h3>Resultado:</h3>
+                <div>
+                    <span id="resultValue" class="result-value">0.00</span>
+                    <span id="resultUnit" class="result-unit">°F</span>
+                </div>
+            </div>
+            
+            <div class="formula">
+                <h4>Fórmula de Conversión</h4>
+                <p id="formulaText">°C = (°F - 32) × 5/9</p>
+            </div>
+            
+            <div class="install-prompt" id="installPrompt">
+                <p>Instala esta aplicación en tu teléfono para usarla offline</p>
+                <button id="installBtn">Instalar aplicación</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Referencias a elementos DOM
+        const temperatureInput = document.getElementById('temperature');
+        const fromUnitSelect = document.getElementById('fromUnit');
+        const toUnitSelect = document.getElementById('toUnit');
+        const convertBtn = document.getElementById('convertBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const resultValue = document.getElementById('resultValue');
+        const resultUnit = document.getElementById('resultUnit');
+        const formulaText = document.getElementById('formulaText');
+        const installPrompt = document.getElementById('installPrompt');
+        const installBtn = document.getElementById('installBtn');
+        
+        // Estado de la aplicación
+        let deferredPrompt;
+        
+        // Función de conversión con animación
+        function convertTemperature() {
+            const inputValue = parseFloat(temperatureInput.value);
+            
+            if (isNaN(inputValue)) {
+                resultValue.textContent = 'Error';
+                resultUnit.textContent = '';
+                return;
+            }
+            
+            const fromUnit = fromUnitSelect.value;
+            const toUnit = toUnitSelect.value;
+            
+            let result, unit, formula;
+            
+            if (fromUnit === 'celsius' && toUnit === 'fahrenheit') {
+                result = (inputValue * 9/5) + 32;
+                unit = '°F';
+                formula = `°F = (${inputValue} × 9/5) + 32 = ${result.toFixed(2)}`;
+            } else if (fromUnit === 'fahrenheit' && toUnit === 'celsius') {
+                result = (inputValue - 32) * 5/9;
+                unit = '°C';
+                formula = `°C = (${inputValue} - 32) × 5/9 = ${result.toFixed(2)}`;
+            } else {
+                result = inputValue;
+                unit = fromUnit === 'celsius' ? '°C' : '°F';
+                formula = `Misma unidad - sin conversión`;
+            }
+            
+            // Animación del resultado
+            resultValue.style.opacity = '0';
+            resultValue.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                resultValue.textContent = result.toFixed(2);
+                resultUnit.textContent = unit;
+                formulaText.textContent = formula;
+                
+                resultValue.style.opacity = '1';
+                resultValue.style.transform = 'translateY(0)';
+                resultValue.style.transition = 'opacity 0.3s, transform 0.3s';
+            }, 300);
+        }
+        
+        // Limpiar campos con animación
+        function clearFields() {
+            temperatureInput.value = '';
+            temperatureInput.focus();
+            
+            // Animación de limpieza
+            resultValue.style.opacity = '0';
+            setTimeout(() => {
+                resultValue.textContent = '0.00';
+                resultUnit.textContent = toUnitSelect.value === 'fahrenheit' ? '°F' : '°C';
+                formulaText.textContent = toUnitSelect.value === 'fahrenheit' ? 
+                    '°F = (°C × 9/5) + 32' : '°C = (°F - 32) × 5/9';
+                resultValue.style.opacity = '1';
+            }, 300);
+        }
+        
+        // Actualizar fórmula cuando cambian las unidades
+        function updateFormula() {
+            if (fromUnitSelect.value === 'celsius' && toUnitSelect.value === 'fahrenheit') {
+                formulaText.textContent = '°F = (°C × 9/5) + 32';
+                resultUnit.textContent = '°F';
+            } else if (fromUnitSelect.value === 'fahrenheit' && toUnitSelect.value === 'celsius') {
+                formulaText.textContent = '°C = (°F - 32) × 5/9';
+                resultUnit.textContent = '°C';
+            } else {
+                formulaText.textContent = 'Misma unidad - sin conversión';
+                resultUnit.textContent = fromUnitSelect.value === 'celsius' ? '°C' : '°F';
+            }
+            resultValue.textContent = '0.00';
+        }
+        
+        // Event Listeners
+        convertBtn.addEventListener('click', convertTemperature);
+        clearBtn.addEventListener('click', clearFields);
+        
+        temperatureInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                convertTemperature();
+            }
+        });
+        
+        fromUnitSelect.addEventListener('change', updateFormula);
+        toUnitSelect.addEventListener('change', updateFormula);
+        
+        // PWA Installation Logic
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installPrompt.style.display = 'block';
+        });
+        
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                deferredPrompt = null;
+                installPrompt.style.display = 'none';
+            }
+        });
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            if (window.location.protocol === 'https:' || window.location.hostname === 'localhost') {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('sw.js')
+                        .then(registration => {
+                            console.log('ServiceWorker registrado con éxito: ', registration.scope);
+                        })
+                        .catch(error => {
+                            console.log('Error al registrar el ServiceWorker: ', error);
+                        });
+                });
+            }
+        }
+        
+        // Inicializar la aplicación
+        clearFields();
+    </script>
+</body>
+</html>
