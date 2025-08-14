@@ -1,6 +1,6 @@
 # FC Temp Converter - README
 
-![App Preview](https://via.placeholder.com/480x800/0f172a/c4b5fd?text=FC+Temp+Converter) <!-- Reemplazar con captura real -->
+![App Preview](https://github.com/roorjoan/fc-temp-converter/blob/main/Screenshot%20FC%20Temp%20Converter.png?raw=true) <!-- Reemplazar con captura real -->
 
 Una calculadora de temperatura minimalista que convierte entre Fahrenheit y Celsius. Diseñada con un modo oscuro permanente y efectos visuales modernos.
 
